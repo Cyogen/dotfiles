@@ -1,0 +1,363 @@
+/* ╔═══════════════════════════════════════════════════════╗ */
+/* ║         CYBERPUNK WAYBAR — NEON GRID EDITION          ║ */
+/* ╚═══════════════════════════════════════════════════════╝ */
+
+@import url("colors.css");
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 7 Brands", "Font Awesome 7 Free", "Hack", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition: all 0.2s ease;
+}
+
+/* ── Bar base ─────────────────────────────────────────── */
+window#waybar {
+    background: rgba(5, 0, 10, 0.45);
+    border-bottom: 1px solid rgba(100, 30, 160, 0.4);
+    color: @fg;
+    box-shadow: 0 1px 8px rgba(100, 30, 160, 0.2), 0 4px 40px rgba(0, 0, 0, 0.6);
+}
+
+window#waybar.hidden {
+    opacity: 0;
+}
+
+/* ── Tooltip ──────────────────────────────────────────── */
+tooltip {
+    background: @bg-deep;
+    border: 1px solid @cyan;
+    border-radius: 4px;
+    color: @fg;
+    box-shadow: 0 0 12px @cyan-dim;
+}
+
+tooltip label {
+    color: @fg;
+    padding: 4px 8px;
+}
+
+/* ── Shared module style ──────────────────────────────── */
+.modules-left,
+.modules-right,
+.modules-center {
+    padding: 0 4px;
+}
+
+/* ── Base widget ──────────────────────────────────────── */
+#custom-logo,
+#workspaces,
+#clock,
+#cpu,
+#memory,
+#network,
+#pulseaudio,
+#bluetooth,
+#tray,
+#custom-power {
+    padding: 0 12px;
+    color: @fg;
+    background: @bg-module;
+    margin: 4px 2px;
+    border-radius: 3px;
+    border-top: 1px solid @border-dim;
+    border-bottom: 1px solid @border-dim;
+}
+
+/* ── Logo ─────────────────────────────────────────────── */
+#custom-logo {
+    font-size: 18px;
+    color: @cyan;
+    background: @bg-deep;
+    border: none;
+    padding: 0 8px 0 4px;
+    text-shadow: 0 0 10px @cyan, 0 0 20px @cyan;
+    margin-left: 0;
+}
+
+/* ── Workspaces ───────────────────────────────────────── */
+#workspaces {
+    background: @bg-deep;
+    border: none;
+    padding: 0 4px;
+    margin: 4px 2px;
+}
+
+#workspaces button {
+    padding: 4px 8px;
+    color: #7030aa;
+    background: @bg-module;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    margin: 2px;
+    min-width: 26px;
+    transition: all 0.15s ease;
+    text-shadow: 0 0 6px #5a1a99, 0 0 12px rgba(120, 40, 180, 0.5);
+}
+
+#workspaces button:hover {
+    background: @bg-hover;
+    color: @cyan-bright;
+    border-color: @cyan;
+    box-shadow: 0 0 8px @cyan-dim;
+    text-shadow: 0 0 6px @cyan;
+}
+
+#workspaces button.active {
+    background: @bg-active;
+    color: @cyan-bright;
+    border-color: @cyan;
+    box-shadow: 0 0 10px @cyan-dim, inset 0 0 10px @cyan-inset;
+    text-shadow: 0 0 8px @cyan;
+    font-weight: 700;
+}
+
+#workspaces button:nth-child(5) {
+    font-size: 16px;
+}
+
+#workspaces button.urgent {
+    background: @bg-urgent;
+    color: @magenta;
+    border-color: @magenta;
+    box-shadow: 0 0 10px @magenta-dim;
+    text-shadow: 0 0 8px @magenta;
+    animation: urgent-pulse 1s ease infinite;
+}
+
+@keyframes urgent-pulse {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+
+
+/* ── Clock ────────────────────────────────────────────── */
+#clock {
+    color: @cyan;
+    font-weight: 700;
+    font-size: 14px;
+    background: @bg-clock;
+    border: 1px solid rgba(100, 30, 160, 0.35);
+    border-top: 1px solid rgba(120, 40, 180, 0.5);
+    border-bottom: 1px solid rgba(120, 40, 180, 0.5);
+    text-shadow: 0 0 10px @cyan, 0 0 20px @cyan-dim;
+    letter-spacing: 1px;
+    padding: 0 18px;
+    opacity: 0.8;
+}
+
+/* ── Ident ────────────────────────────────────────────── */
+#custom-ident {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: @fg-dim;
+    background: transparent;
+    border: none;
+    padding: 0 10px;
+    margin: 4px 0;
+    opacity: 0.5;
+}
+
+/* ── CPU ──────────────────────────────────────────────── */
+#cpu {
+    color: @yellow;
+    border-top-color: @yellow-subtle;
+    border-bottom-color: @yellow-subtle;
+}
+
+#cpu:hover {
+    color: @yellow-bright;
+    background: @bg-hover;
+    text-shadow: 0 0 8px @yellow;
+    border-color: @yellow;
+    box-shadow: 0 0 8px @yellow-dim;
+}
+
+/* CPU warning states */
+#cpu.warning {
+    color: @orange;
+    text-shadow: 0 0 8px @orange;
+}
+
+#cpu.critical {
+    color: @red;
+    text-shadow: 0 0 8px @red;
+    animation: critical-pulse 0.8s ease infinite;
+}
+
+/* ── Memory ───────────────────────────────────────────── */
+#memory {
+    color: @green;
+    border-top-color: @green-subtle;
+    border-bottom-color: @green-subtle;
+}
+
+#memory:hover {
+    color: @green-bright;
+    background: @bg-hover;
+    text-shadow: 0 0 8px @green;
+    border-color: @green;
+    box-shadow: 0 0 8px @green-dim;
+}
+
+#memory.warning {
+    color: @orange;
+    text-shadow: 0 0 8px @orange;
+}
+
+#memory.critical {
+    color: @red;
+    text-shadow: 0 0 8px @red;
+    animation: critical-pulse 0.8s ease infinite;
+}
+
+/* ── Network ──────────────────────────────────────────── */
+#network {
+    color: @cyan-soft;
+    border-top-color: @cyan-subtle;
+    border-bottom-color: @cyan-subtle;
+}
+
+#network:hover {
+    background: @bg-hover;
+    text-shadow: 0 0 8px @cyan;
+    box-shadow: 0 0 8px @cyan-dim;
+}
+
+#network.disconnected {
+    color: @red;
+    text-shadow: 0 0 8px @red;
+}
+
+/* ── Audio ────────────────────────────────────────────── */
+#pulseaudio {
+    color: @magenta-soft;
+    border-top-color: @magenta-subtle;
+    border-bottom-color: @magenta-subtle;
+}
+
+#pulseaudio:hover {
+    background: @bg-hover;
+    text-shadow: 0 0 8px @magenta;
+    box-shadow: 0 0 8px @magenta-dim;
+}
+
+#pulseaudio.muted {
+    color: @fg-muted;
+    text-shadow: none;
+    opacity: 0.6;
+}
+
+/* ── Bluetooth ────────────────────────────────────────── */
+#bluetooth {
+    color: @fg-mid;
+    border-top-color: rgba(180, 80, 255, 0.12);
+    border-bottom-color: rgba(180, 80, 255, 0.12);
+}
+
+#bluetooth.connected {
+    color: @cyan;
+    text-shadow: 0 0 8px @cyan;
+    border-top-color: @cyan-subtle;
+    border-bottom-color: @cyan-subtle;
+}
+
+#bluetooth.off {
+    color: @fg-muted;
+    opacity: 0.5;
+}
+
+#bluetooth:hover {
+    background: @bg-hover;
+    text-shadow: 0 0 8px @cyan;
+    box-shadow: 0 0 8px @cyan-dim;
+}
+
+/* ── System tray ──────────────────────────────────────── */
+#tray {
+    background: @bg-module;
+    border-top-color: @border-dim;
+    border-bottom-color: @border-dim;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @bg-urgent;
+    border-color: @red;
+}
+
+/* ── Power button ─────────────────────────────────────── */
+#custom-power {
+    color: @red;
+    font-size: 16px;
+    background: @bg-module;
+    border-top-color: @red-subtle;
+    border-bottom-color: @red-subtle;
+    padding: 0 14px;
+    margin-right: 0;
+}
+
+#custom-power:hover {
+    color: @red-bright;
+    background: @bg-urgent;
+    border-color: @red;
+    box-shadow: 0 0 12px @red-dim;
+    text-shadow: 0 0 8px @red;
+}
+
+/* ── Spotify ──────────────────────────────────────────── */
+#custom-spotify {
+    color: #1db954;
+    background: @bg-module;
+    border-top: 1px solid rgba(29, 185, 84, 0.2);
+    border-bottom: 1px solid rgba(29, 185, 84, 0.2);
+    padding: 0 14px;
+    margin: 4px 250px 4px 2px;
+    border-radius: 3px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+#custom-spotify.playing {
+    color: #1db954;
+    text-shadow: 0 0 8px #1db954, 0 0 18px rgba(29, 185, 84, 0.4);
+    border-top-color: rgba(29, 185, 84, 0.45);
+    border-bottom-color: rgba(29, 185, 84, 0.45);
+    animation: spotify-glow 0.8s ease-in-out infinite;
+}
+
+#custom-spotify.paused {
+    color: rgba(29, 185, 84, 0.45);
+    text-shadow: none;
+    border-top-color: rgba(29, 185, 84, 0.1);
+    border-bottom-color: rgba(29, 185, 84, 0.1);
+}
+
+#custom-spotify:hover {
+    background: @bg-hover;
+    text-shadow: 0 0 10px #1db954, 0 0 20px rgba(29, 185, 84, 0.5);
+    box-shadow: 0 0 10px rgba(29, 185, 84, 0.25);
+}
+
+@keyframes spotify-glow {
+    0%   { text-shadow: 0 0 6px #1db954, 0 0 12px rgba(29, 185, 84, 0.3); }
+    50%  { text-shadow: 0 0 14px #1db954, 0 0 28px rgba(29, 185, 84, 0.6); }
+    100% { text-shadow: 0 0 6px #1db954, 0 0 12px rgba(29, 185, 84, 0.3); }
+}
+
+/* ── Critical animation ───────────────────────────────── */
+@keyframes critical-pulse {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.6; }
+    100% { opacity: 1; }
+}

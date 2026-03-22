@@ -1,0 +1,110 @@
+* {
+  all: unset;
+  font-family: "0xProto Nerd Font", monospace;
+  font-size: 12px;
+}
+
+.widget-box {
+  background: rgba(8, 0, 18, 0.88);
+  border: 1px solid rgba(180, 80, 255, 0.35);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: #c0a0e0;
+}
+
+.widget-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #b450ff;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+
+.stat-item {
+  margin-bottom: 2px;
+}
+
+.stat-icon {
+  font-size: 14px;
+  color: #b450ff;
+  min-width: 20px;
+}
+
+.stat-label {
+  color: #7050a0;
+  font-size: 11px;
+  min-width: 36px;
+}
+
+.stat-value {
+  color: #00ff41;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stat-bar {
+  min-height: 4px;
+}
+
+.stat-bar trough {
+  min-height: 4px;
+  border-radius: 2px;
+  background: rgba(180, 80, 255, 0.12);
+}
+
+.stat-bar trough highlight {
+  background: linear-gradient(to right, #4b0082, #b450ff);
+  border-radius: 2px;
+}
+
+.stat-bar slider {
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+// ── Weather ────────────────────────────────────────────────────────────────
+
+.weather-box {
+  // inherits widget-box
+}
+
+.weather-row {
+  padding: 7px 2px;
+  border-bottom: 1px solid rgba(180, 80, 255, 0.10);
+}
+
+.weather-row:last-child {
+  border-bottom: none;
+}
+
+.weather-dow {
+  color: #c0a0e0;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.weather-icon {
+  font-size: 15px;
+  color: #b450ff;
+}
+
+.weather-hi {
+  color: #ff8844;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.weather-lo {
+  color: #4488ff;
+  font-size: 12px;
+}
+
+.weather-sep {
+  color: #4b2070;
+  font-size: 11px;
+}

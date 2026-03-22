@@ -1,0 +1,165 @@
+# ╔═══════════════════════════════════════════════════════╗
+# ║         CYBERPUNK DIRCOLORS — NEON GRID               ║
+# ╚═══════════════════════════════════════════════════════╝
+
+RESET 0
+NORMAL 38;5;146         # default text — soft lavender-grey
+FILE 38;5;146           # regular file — soft lavender-grey
+DIR 1;38;5;51           # directory — bold cyan
+LINK 1;38;5;213         # symlink — hot pink
+MULTIHARDLINK 38;5;213
+FIFO 38;5;220           # pipe — yellow
+SOCK 1;38;5;208         # socket — orange
+DOOR 1;38;5;208
+BLK 1;38;5;220          # block device — bold yellow
+CHR 1;38;5;220          # char device
+ORPHAN 1;38;5;196       # broken symlink — bold red
+MISSING 1;38;5;196
+SETUID 1;38;5;196       # setuid — bold red
+SETGID 1;38;5;220       # setgid — bold yellow
+CAPABILITY 38;5;196
+STICKY_OTHER_WRITABLE 1;38;5;51    # sticky + other-writable — cyan
+OTHER_WRITABLE 38;5;51
+STICKY 1;38;5;33
+EXEC 1;38;5;82          # executable — bold green
+
+# ── Archives — hot magenta ────────────────────────────────
+.tar  1;38;5;165
+.tgz  1;38;5;165
+.arc  1;38;5;165
+.arj  1;38;5;165
+.taz  1;38;5;165
+.lha  1;38;5;165
+.lz4  1;38;5;165
+.lzh  1;38;5;165
+.lzma 1;38;5;165
+.tlz  1;38;5;165
+.txz  1;38;5;165
+.tzo  1;38;5;165
+.t7z  1;38;5;165
+.zip  1;38;5;165
+.z    1;38;5;165
+.Z    1;38;5;165
+.dz   1;38;5;165
+.gz   1;38;5;165
+.lrz  1;38;5;165
+.lz   1;38;5;165
+.lzo  1;38;5;165
+.xz   1;38;5;165
+.zst  1;38;5;165
+.tzst 1;38;5;165
+.bz2  1;38;5;165
+.bz   1;38;5;165
+.tbz  1;38;5;165
+.tbz2 1;38;5;165
+.tz   1;38;5;165
+.deb  1;38;5;165
+.rpm  1;38;5;165
+.jar  1;38;5;165
+.war  1;38;5;165
+.ear  1;38;5;165
+.sar  1;38;5;165
+.rar  1;38;5;165
+.7z   1;38;5;165
+
+# ── Images — electric blue ────────────────────────────────
+.jpg  38;5;33
+.jpeg 38;5;33
+.mjpg 38;5;33
+.mjpeg 38;5;33
+.gif  38;5;33
+.bmp  38;5;33
+.pbm  38;5;33
+.pgm  38;5;33
+.ppm  38;5;33
+.tga  38;5;33
+.xbm  38;5;33
+.xpm  38;5;33
+.tif  38;5;33
+.tiff 38;5;33
+.png  38;5;33
+.svg  38;5;33
+.svgz 38;5;33
+.mng  38;5;33
+.pcx  38;5;33
+.webp 38;5;33
+.ico  38;5;33
+
+# ── Video — neon orange ───────────────────────────────────
+.mov  38;5;208
+.mpg  38;5;208
+.mpeg 38;5;208
+.m2v  38;5;208
+.mkv  38;5;208
+.webm 38;5;208
+.ogm  38;5;208
+.mp4  38;5;208
+.m4v  38;5;208
+.mp4v 38;5;208
+.vob  38;5;208
+.qt   38;5;208
+.nuv  38;5;208
+.wmv  38;5;208
+.asf  38;5;208
+.rm   38;5;208
+.rmvb 38;5;208
+.flc  38;5;208
+.avi  38;5;208
+.fli  38;5;208
+.flv  38;5;208
+.gl   38;5;208
+.m2ts 38;5;208
+.divx 38;5;208
+
+# ── Audio — neon yellow ───────────────────────────────────
+.aac  38;5;220
+.au   38;5;220
+.flac 38;5;220
+.m4a  38;5;220
+.mid  38;5;220
+.midi 38;5;220
+.mka  38;5;220
+.mp3  38;5;220
+.mpc  38;5;220
+.ogg  38;5;220
+.ra   38;5;220
+.wav  38;5;220
+.oga  38;5;220
+.opus 38;5;220
+.spx  38;5;220
+.xspf 38;5;220
+
+# ── Source code — neon green ──────────────────────────────
+.py   38;5;82
+.rb   38;5;82
+.pl   38;5;82
+.js   38;5;82
+.ts   38;5;82
+.go   38;5;82
+.rs   38;5;82
+.c    38;5;82
+.cpp  38;5;82
+.h    38;5;82
+.sh   38;5;82
+.bash 38;5;82
+.zsh  38;5;82
+.fish 38;5;82
+.lua  38;5;82
+.vim  38;5;82
+.css  38;5;82
+.html 38;5;82
+.json 38;5;82
+.yaml 38;5;82
+.yml  38;5;82
+.toml 38;5;82
+.xml  38;5;82
+
+# ── Docs — soft peach/coral ───────────────────────────────
+.pdf  38;5;209
+.doc  38;5;209
+.docx 38;5;209
+.odt  38;5;209
+.md   38;5;159
+.txt  38;5;159
+.rst  38;5;159
+.log  38;5;240

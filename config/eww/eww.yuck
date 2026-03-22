@@ -1,0 +1,125 @@
+;;;; ── Variables ─────────────────────────────────────────────────────────── ;;;;
+
+(defpoll cpu-temp
+  :interval "3s"
+  :initial 0
+  `awk '{printf "%d", $1/1000}' /sys/class/hwmon/hwmon6/temp1_input`)
+
+(defpoll gpu-temp
+  :interval "3s"
+  :initial 0
+  `awk '{printf "%d", $1/1000}' /sys/class/hwmon/hwmon4/temp1_input`)
+
+(defpoll ram-used
+  :interval "3s"
+  :initial "0.0"
+  `free -m | awk '/^Mem:/ {printf "%.1f", $3/1024}'`)
+
+(defpoll ram-total
+  :interval "3s"
+  :initial "0.0"
+  `free -m | awk '/^Mem:/ {printf "%.1f", $2/1024}'`)
+
+(defpoll ram-pct
+  :interval "3s"
+  :initial 0
+  `free | awk '/^Mem:/ {printf "%d", $3/$2*100}'`)
+
+(defpoll weather
+  :interval "30m"
+  :initial "[]"
+  `~/.config/eww/scripts/weather.sh`)
+
+
+;;;; ── Windows ────────────────────────────────────────────────────────────── ;;;;
+
+(defwindow stats-widget
+  :monitor 1
+  :geometry (geometry
+    :x "15px"
+    :y "50px"
+    :width "280px"
+    :height "200px"
+    :anchor "top right")
+  :stacking "bottom"
+  :exclusive false
+  (stats-body))
+
+(defwindow weather-widget
+  :monitor 1
+  :geometry (geometry
+    :x "15px"
+    :y "270px"
+    :width "280px"
+    :height "380px"
+    :anchor "top right")
+  :stacking "bottom"
+  :exclusive false
+  (weather-body))
+
+
+;;;; ── Stats Widget ───────────────────────────────────────────────────────── ;;;;
+
+(defwidget stats-body []
+  (box :class "widget-box"
+       :orientation "v"
+       :spacing 6
+    (label :class "widget-title"
+           :text "  SYSTEM"
+           :halign "start")
+    (stat-item :icon "󰻠"
+               :label "CPU"
+               :display "${cpu-temp}°C"
+               :pct cpu-temp
+               :max 110)
+    (stat-item :icon "󰆦"
+               :label "GPU"
+               :display "${gpu-temp}°C"
+               :pct gpu-temp
+               :max 110)
+    (stat-item :icon "󰍛"
+               :label "RAM"
+               :display "${ram-used}/${ram-total} GB"
+               :pct ram-pct
+               :max 100)))
+
+(defwidget stat-item [icon label display pct max]
+  (box :class "stat-item"
+       :orientation "v"
+       :spacing 3
+    (box :orientation "h"
+         :spacing 6
+      (label :class "stat-icon"  :text icon)
+      (label :class "stat-label" :text label)
+      (label :class "stat-value" :text display
+             :halign "end"
+             :hexpand true))
+    (scale :class "stat-bar"
+           :value pct
+           :min 0
+           :max max
+           :active false)))
+
+
+;;;; ── Weather Widget ─────────────────────────────────────────────────────── ;;;;
+
+(defwidget weather-body []
+  (box :class "widget-box"
+       :orientation "v"
+       :spacing 2
+    (label :class "widget-title"
+           :text "󰖙  KENDALL, FL"
+           :halign "start")
+    (for day in weather
+      (day-row :day day))))
+
+(defwidget day-row [day]
+  (box :class "weather-row"
+       :orientation "h"
+       :spacing 0
+    (label :class "weather-dow"  :text {day.day}        :width 40 :halign "start")
+    (label :class "weather-icon" :text {day.icon}       :width 28 :halign "center")
+    (box :hexpand true)
+    (label :class "weather-lo"   :text "${day.low}°"   :halign "end")
+    (label :class "weather-sep"  :text "–"             :width 16 :halign "center")
+    (label :class "weather-hi"   :text "${day.high}°"  :width 36 :halign "start")))
