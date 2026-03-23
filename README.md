@@ -30,7 +30,7 @@ Cyberpunk — dark background with purple (`#b450ff`) accents and neon green ter
 Two eww widgets that appear only on workspace 6 (right monitor) and sit behind all windows:
 
 - **System** — CPU temp, GPU temp, RAM usage with live progress bars (updates every 3s)
-- **Weather** — 7-day forecast for Kendall, Miami FL via [Open-Meteo](https://open-meteo.com) (no API key required, updates every 30min)
+- **Weather** — 7-day forecast for in configuration via [Open-Meteo](https://open-meteo.com) (no API key required, updates every 30min)
 
 ## Hardware assumptions
 
