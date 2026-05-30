@@ -1,11 +1,16 @@
 #!/bin/bash
 # ============================================================
-# Arch Linux / Hyprland desktop setup — full install script
+# Arch Linux / Hyprland + KDE desktop setup — full install script
 # Run as your normal user (NOT root). Uses sudo internally.
+#
+# Assumes a minimal Arch base install with:
+#   base, linux, linux-firmware, amd-ucode, networkmanager, sudo, sddm
+#   (these are set up during the Arch install itself)
 #
 # Hardware-specific values that may need adjusting on new hardware:
 #   - Monitor names (DP-1, DP-3) in config/hypr/hyprland.conf
 #   - Wallpaper path in config/hypr/hyprland.conf  ← needs /mnt/vault mounted
+#   - GPU driver: script assumes AMD (vulkan-radeon, xf86-video-amdgpu)
 #   - eww.yuck hwmon paths — auto-detected by this script (AMD CPU + GPU assumed)
 # ============================================================
 
@@ -45,32 +50,84 @@ fi
 # ── 3. Pacman packages ───────────────────────────────────────────────────────
 
 PACMAN_PKGS=(
-    # Wayland / Hyprland
-    hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
+    # Wayland / Hyprland stack
+    hyprland hyprpaper hyprpolkitagent
+    xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
     waybar swww eww socat
-    wofi wlogout
-    kitty
+    wofi
+    kitty uwsm
+    dunst
+    grim slurp wl-clipboard
+    qt5-wayland qt6-wayland
+    xdg-utils
+
+    # KDE / Plasma
+    plasma-meta
+    dolphin kate konsole
+    sddm
+
+    # Display manager / session
+    networkmanager network-manager-applet
+    iwd wpa_supplicant wireless_tools
 
     # Audio / video
-    pipewire pipewire-alsa pipewire-pulse wireplumber
-    playerctl
+    pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+    gst-plugin-pipewire libpulse
+    pavucontrol playerctl
+    vlc vlc-plugins-all
 
-    # System tools
-    lm_sensors udiskie brightnessctl
-    network-manager-applet polkit-kde-agent
-    grimblast-git
+    # Bluetooth
+    bluez bluez-utils
+
+    # GPU (AMD) — change for Intel/Nvidia
+    vulkan-radeon lib32-vulkan-radeon
+    xf86-video-amdgpu xf86-video-ati
+    libva-utils
 
     # Fonts
     ttf-0xproto-nerd ttf-jetbrains-mono-nerd
+    woff2-font-awesome
+
+    # Terminal / shell tools
+    htop btop fastfetch ranger nano wget curl fuse2
+
+    # System tools
+    lm_sensors udiskie brightnessctl
+    smartmontools zram-generator
+    btrfs-progs
+
+    # Printing
+    cups cups-pk-helper
+    foomatic-db foomatic-db-engine
+    ghostscript system-config-printer
+
+    # Virtualization
+    libvirt qemu-full virt-manager dnsmasq iptables
 
     # Apps
     firefox discord steam
+    obs-studio qbittorrent remmina
+    bitwarden blender
+    spotify-launcher
+    freerdp
+
+    # Gaming
+    lutris
 
     # Dev / editor
-    neovim fd nodejs npm lazygit python curl git
+    git github-cli
+    neovim fd nodejs npm lazygit
+    python python-six
+    marksman pandoc-cli
+    base-devel rust
 
-    # Build tools (needed for AUR packages like eww)
-    rust base-devel
+    # Security / CTF tools
+    wireshark-cli binwalk hashcat john
+    perl-image-exiftool
+
+    # Misc
+    tk speech-dispatcher
+    xorg-server xorg-xinit
 )
 
 info "Installing pacman packages..."
@@ -80,6 +137,32 @@ sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}" || \
 # ── 4. AUR packages ──────────────────────────────────────────────────────────
 
 AUR_PKGS=(
+    # Core desktop
+    wlogout
+    grimblast-git
+
+    # Apps
+    brave-bin
+    freetube
+    spotify-launcher   # fallback if not in official repos
+    zoom
+    durdraw
+    java-chatty        # Twitch chat client
+
+    # Fonts
+    ttf-font-awesome-5
+
+    # Gaming
+    xivlauncher
+    cheat-engine-zh
+    lutris             # fallback if not in official repos
+
+    # Dev / CTF
+    seclists
+    python-escpos
+    packettracer       # Cisco Packet Tracer
+
+    # Discord enhancement
     betterdiscordctl
 )
 
@@ -87,34 +170,75 @@ info "Installing AUR packages..."
 yay -S --needed --noconfirm "${AUR_PKGS[@]}" || \
     warn "Some AUR packages may have failed — check output above"
 
-# ── 5. Deploy configs ────────────────────────────────────────────────────────
+# ── 5. Enable system services ─────────────────────────────────────────────────
+
+info "Enabling system services..."
+sudo systemctl enable sddm
+sudo systemctl enable NetworkManager
+sudo systemctl enable bluetooth
+sudo systemctl enable cups
+sudo systemctl enable libvirtd
+
+success "Services enabled"
+
+# ── 6. Deploy configs ────────────────────────────────────────────────────────
 
 deploy() {
     local src="$1" dst="$2"
     mkdir -p "$(dirname "$dst")"
-    # Backup existing file if present
     [[ -f "$dst" && ! -f "${dst}.bak" ]] && cp "$dst" "${dst}.bak"
     cp -f "$src" "$dst"
 }
 
+deploydir() {
+    local src="$1" dst="$2"
+    mkdir -p "$dst"
+    cp -a "$src/." "$dst/"
+}
+
 info "Deploying configs..."
 
+# Hyprland
 deploy "$DOTS/config/hypr/hyprland.conf"    "$USER_HOME/.config/hypr/hyprland.conf"
 deploy "$DOTS/config/hypr/hyprpaper.conf"   "$USER_HOME/.config/hypr/hyprpaper.conf"
+
+# Waybar
 deploy "$DOTS/config/waybar/config"         "$USER_HOME/.config/waybar/config"
 deploy "$DOTS/config/waybar/style.css"      "$USER_HOME/.config/waybar/style.css"
 deploy "$DOTS/config/waybar/colors.css"     "$USER_HOME/.config/waybar/colors.css"
+
+# Kitty
 deploy "$DOTS/config/kitty/kitty.conf"      "$USER_HOME/.config/kitty/kitty.conf"
+
+# eww
 deploy "$DOTS/config/eww/eww.yuck"          "$USER_HOME/.config/eww/eww.yuck"
 deploy "$DOTS/config/eww/eww.scss"          "$USER_HOME/.config/eww/eww.scss"
 deploy "$DOTS/config/eww/scripts/weather.sh" \
                                             "$USER_HOME/.config/eww/scripts/weather.sh"
 deploy "$DOTS/config/eww/scripts/workspace-watch.sh" \
                                             "$USER_HOME/.config/eww/scripts/workspace-watch.sh"
+
+# wlogout
 deploy "$DOTS/config/wlogout/layout"        "$USER_HOME/.config/wlogout/layout"
+
+# Shell
 deploy "$DOTS/home/.bashrc"                 "$USER_HOME/.bashrc"
 deploy "$DOTS/home/.dircolors"              "$USER_HOME/.dircolors"
 
+# Neovim (full config)
+deploydir "$DOTS/config/nvim"               "$USER_HOME/.config/nvim"
+
+# KDE
+deploy "$DOTS/config/kde/kdeglobals"        "$USER_HOME/.config/kdeglobals"
+deploy "$DOTS/config/kde/kglobalshortcutsrc" "$USER_HOME/.config/kglobalshortcutsrc"
+deploy "$DOTS/config/kde/kwinrc"            "$USER_HOME/.config/kwinrc"
+deploy "$DOTS/config/kde/kwinrulesrc"       "$USER_HOME/.config/kwinrulesrc"
+deploy "$DOTS/config/kde/plasmarc"          "$USER_HOME/.config/plasmarc"
+[[ -f "$DOTS/config/kde/plasma-org.kde.plasma.desktop-appletsrc" ]] && \
+    deploy "$DOTS/config/kde/plasma-org.kde.plasma.desktop-appletsrc" \
+           "$USER_HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+
+# Steam local override
 if [[ -f "$DOTS/local/share/applications/steam.desktop" ]]; then
     deploy "$DOTS/local/share/applications/steam.desktop" \
            "$USER_HOME/.local/share/applications/steam.desktop"
@@ -125,7 +249,7 @@ chmod +x "$USER_HOME/.config/eww/scripts/workspace-watch.sh"
 
 success "Configs deployed"
 
-# ── 6. Auto-detect AMD hwmon paths and patch eww.yuck ────────────────────────
+# ── 7. Auto-detect AMD hwmon paths and patch eww.yuck ────────────────────────
 
 info "Detecting CPU/GPU hwmon paths..."
 
@@ -139,19 +263,12 @@ for name_file in /sys/class/hwmon/hwmon*/name; do
         k10temp)
             CPU_HWMON="$dev/temp1_input" ;;
         amdgpu)
-            # Discrete GPU has a fan controller; integrated does not
             [[ -f "$dev/fan1_input" ]] && GPU_HWMON="$dev/temp1_input" ;;
     esac
 done
 
 if [[ -n "$CPU_HWMON" && -n "$GPU_HWMON" ]]; then
     YUCK="$USER_HOME/.config/eww/eww.yuck"
-    # Replace the hwmon paths with detected values
-    sed -i "s|/sys/class/hwmon/hwmon[0-9]*/temp1_input'  # cpu|$CPU_HWMON'  # cpu|g" "$YUCK" 2>/dev/null || true
-    # Simpler: just patch known awk lines
-    sed -i "s|awk '{printf \"%d\", \$1/1000}' /sys/class/hwmon/hwmon[0-9]*/temp1_input\`  # cpu-temp|awk '{printf \"%d\", \$1/1000}' $CPU_HWMON\`  # cpu-temp|g" "$YUCK" 2>/dev/null || true
-
-    # Patch eww.yuck inline awk commands
     python3 - "$YUCK" "$CPU_HWMON" "$GPU_HWMON" << 'PYEOF'
 import sys, re
 
@@ -160,14 +277,12 @@ yuck_path, cpu_path, gpu_path = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(yuck_path) as f:
     content = f.read()
 
-# Replace CPU hwmon path (first awk line after defpoll cpu-temp)
 content = re.sub(
     r"(defpoll cpu-temp.*?`awk '\{printf \"%d\", \$1/1000\}' )/sys/class/hwmon/hwmon\d+/temp1_input(`)",
     rf"\g<1>{cpu_path}\g<2>",
     content, flags=re.DOTALL
 )
 
-# Replace GPU hwmon path (first awk line after defpoll gpu-temp)
 content = re.sub(
     r"(defpoll gpu-temp.*?`awk '\{printf \"%d\", \$1/1000\}' )/sys/class/hwmon/hwmon\d+/temp1_input(`)",
     rf"\g<1>{gpu_path}\g<2>",
@@ -183,35 +298,22 @@ PYEOF
     success "hwmon paths patched in eww.yuck"
 else
     warn "Could not auto-detect hwmon paths — edit ~/.config/eww/eww.yuck manually"
-    warn "  CPU (k10temp): $(ls /sys/class/hwmon/hwmon*/name 2>/dev/null | xargs grep -l k10temp 2>/dev/null | sed 's/name/temp1_input/' || echo 'not found')"
-    warn "  GPU (amdgpu with fan): $(for f in /sys/class/hwmon/hwmon*/name; do grep -q amdgpu "$f" 2>/dev/null && ls "$(dirname $f)/fan1_input" 2>/dev/null && dirname "$f"; done | sed 's|$|/temp1_input|' || echo 'not found')"
 fi
 
-# ── 7. Neovim / LazyVim ──────────────────────────────────────────────────────
+# ── 8. dircolors symlink ──────────────────────────────────────────────────────
 
-if [[ ! -d "$USER_HOME/.config/nvim" ]]; then
-    info "Installing LazyVim..."
-    git clone https://github.com/LazyVim/starter "$USER_HOME/.config/nvim"
-    rm -rf "$USER_HOME/.config/nvim/.git"
-    success "LazyVim installed — run 'nvim' to finish plugin installation"
-else
-    warn "~/.config/nvim already exists — skipping LazyVim install"
-fi
-
-# ── 8. dircolors ─────────────────────────────────────────────────────────────
-
-if [[ ! -f "$USER_HOME/.dir_colors" ]]; then
+[[ ! -f "$USER_HOME/.dir_colors" ]] && \
     ln -sf "$USER_HOME/.dircolors" "$USER_HOME/.dir_colors" 2>/dev/null || true
-fi
 
-# ── 9. sensors init ──────────────────────────────────────────────────────────
+# ── 9. lm_sensors init ───────────────────────────────────────────────────────
 
 info "Initializing lm_sensors..."
 sudo sensors-detect --auto &>/dev/null || true
 
-# ── 10. BetterDiscord ────────────────────────────────────────────────────────
+# ── 10. Add user to libvirt group ────────────────────────────────────────────
 
-warn "BetterDiscord: after first launching Discord, run:  betterdiscordctl install"
+info "Adding $USER to libvirt group..."
+sudo usermod -aG libvirt "$USER" 2>/dev/null || true
 
 # ── Done ─────────────────────────────────────────────────────────────────────
 
@@ -219,10 +321,9 @@ echo ""
 success "Installation complete!"
 echo ""
 echo -e "${YELLOW}Manual steps remaining:${NC}"
-echo "  1. Reboot or log into Hyprland"
+echo "  1. Reboot and log in via SDDM — select Hyprland or Plasma session"
 echo "  2. Ensure /mnt/vault/Wallpapers/pirate.png is accessible (wallpaper path)"
-echo "  3. Run 'nvim' to let LazyVim install plugins"
+echo "  3. Run 'nvim' to let LazyVim install plugins on first launch"
 echo "  4. Run 'betterdiscordctl install' after first Discord launch"
 echo "  5. Monitor names (DP-1, DP-3) may differ — adjust ~/.config/hypr/hyprland.conf"
-echo "  6. Push your dotfiles to GitHub:"
-echo "     cd $DOTS && git init && git add -A && git commit -m 'initial' && git remote add origin <your-repo-url> && git push -u origin main"
+echo "  6. Re-login for libvirt group membership to take effect"

@@ -1,0 +1,11 @@
+[9eb4489e-4423-4b23-8419-380e616e8292]
+Description=Application settings for com.chatterino.chatterino
+above=true
+aboverule=3
+wmclass=\scom.chatterino.chatterino
+wmclasscomplete=true
+wmclassmatch=1
+
+[General]
+count=1
+rules=9eb4489e-4423-4b23-8419-380e616e8292
